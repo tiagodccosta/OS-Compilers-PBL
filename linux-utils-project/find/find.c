@@ -10,7 +10,6 @@ void search(const char *dir, const char *filename)
         return;
 
     struct dirent *entry;
-
     char path[1024];
 
     while ((entry = readdir(dp)) != NULL)
