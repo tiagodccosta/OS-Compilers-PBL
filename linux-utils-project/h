@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Check if a command was provided
+if [ $# -lt 1 ]; then
+    echo "Usage: h <command> [args...]"
+    echo "Available commands: ls, pwd, head, tail, mkdir, rmdir, find"
+    exit 1
+fi
+
+# Extract the command and remove it from arguments
+CMD="$1"
+shift
+
+# Execute the appropriate command with remaining arguments
+case "$CMD" in
+    "ls")
+        "$SCRIPT_DIR/ls/ls" "$@"
+        ;;
+    "pwd")
+        "$SCRIPT_DIR/pwd/pwd" "$@"
+        ;;
+    "head")
+        "$SCRIPT_DIR/head/head" "$@"
+        ;;
+    "tail")
+        "$SCRIPT_DIR/tail/tail" "$@"
+        ;;
+    "mkdir")
+        "$SCRIPT_DIR/mkdir/mkdir" "$@"
+        ;;
+    "rmdir")
+        "$SCRIPT_DIR/rmdir/rmdir" "$@"
+        ;;
+    "find")
+        "$SCRIPT_DIR/find/find" "$@"
+        ;;
+    *)
+        echo "Unknown command: $CMD"
+        echo "Available commands: ls, pwd, head, tail, mkdir, rmdir, find"
+        exit 1
+        ;;
+esac
