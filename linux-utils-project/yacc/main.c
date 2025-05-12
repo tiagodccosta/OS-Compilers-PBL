@@ -1,4 +1,3 @@
-// filepath: /Users/tiagodccosta/Desktop/PBL OS-Compiladores/linux-utils-project/yacc/main.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +45,7 @@ int main(int argc, char *argv[]) {
     char command_buffer[1024] = {0};
     char *base_dir = NULL;
     
+    // Determine base directory
     if (argc > 1) {
         base_dir = argv[1];
     } else {
@@ -58,52 +58,81 @@ int main(int argc, char *argv[]) {
         }
     }
     
+    // Get input from command line arguments
     if (argc > 2) {
+        // Start with an empty arg_array
+        init_command_info();
+        
+        // Build command string from all arguments
         for (int i = 2; i < argc; i++) {
             strcat(command_buffer, argv[i]);
             if (i < argc - 1) {
                 strcat(command_buffer, " ");
             }
         }
-    } else {
-        printf("Enter command: ");
-        if (fgets(command_buffer, sizeof(command_buffer), stdin) == NULL) {
+        
+        // Parse command
+        FILE *cmd_stream = fmemopen(command_buffer, strlen(command_buffer), "r");
+        if (!cmd_stream) {
+            perror("fmemopen");
             return EXIT_FAILURE;
         }
-    }
-    
-    FILE *cmd_stream = fmemopen(command_buffer, strlen(command_buffer), "r");
-    if (!cmd_stream) {
-        perror("fmemopen");
+        
+        yyin = cmd_stream;
+        int result = yyparse();
+        fclose(cmd_stream);
+        
+        // Execute command if parsing was successful
+        if (result == 1) {
+            char *cmd_path = get_command_path(cmd_info.command, base_dir);
+            if (cmd_path) {
+                printf("Executing: %s\n", cmd_path);
+                
+                // Create a new argument array for execv
+                char **exec_args = malloc((arg_count + 2) * sizeof(char*));
+                
+                // Command name as first argument
+                exec_args[0] = strrchr(cmd_path, '/') + 1;
+                
+                // Copy all arguments to exec_args
+                for (int i = 0; i < arg_count; i++) {
+                    exec_args[i + 1] = arg_array[i];
+                }
+                
+                // Null-terminate the array
+                exec_args[arg_count + 1] = NULL;
+                
+                // Debug: Print all arguments
+                printf("Arguments: ");
+                for (int i = 0; exec_args[i] != NULL; i++) {
+                    printf("[%s] ", exec_args[i]);
+                }
+                printf("\n");
+                
+                // Execute the command
+                execv(cmd_path, exec_args);
+                
+                // If execv returns, it failed
+                perror("execv");
+                free(cmd_path);
+                free(exec_args);
+                return EXIT_FAILURE;
+            } else {
+                fprintf(stderr, "Unknown command\n");
+            }
+        } else {
+            fprintf(stderr, "Command parsing error\n");
+        }
+        
+        // Clean up
+        for (int i = 0; i < arg_count; i++) {
+            free(arg_array[i]);
+        }
+        free(arg_array);
+    } else {
+        fprintf(stderr, "No command specified\n");
         return EXIT_FAILURE;
     }
-    
-    yyin = cmd_stream;
-    init_command_info();
-    int result = yyparse();
-    fclose(cmd_stream);
-    
-    if (result == 1) {
-        char *cmd_path = get_command_path(cmd_info.command, base_dir);
-        if (cmd_path) {
-            printf("Executing: %s\n", cmd_path);
-            // Execute the command with the arguments
-            execv(cmd_path, arg_array);
-            
-            perror("execv");
-            free(cmd_path);
-            return EXIT_FAILURE;
-        } else {
-            fprintf(stderr, "Unknown command\n");
-        }
-    } else {
-        fprintf(stderr, "Command parsing error\n");
-    }
-    
-    for (int i = 0; i < arg_count; i++) {
-        free(arg_array[i]);
-    }
-    free(arg_array);
     
     return EXIT_SUCCESS;
 }
