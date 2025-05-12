@@ -1,6 +1,6 @@
-.PHONY: all clean pwd ls head tail mkdir rmdir find
+.PHONY: all clean pwd ls head tail mkdir rmdir find yacc
 
-all: pwd ls head tail mkdir rmdir find
+all: pwd ls head tail mkdir rmdir find yacc
 
 pwd:
 	cd pwd && $(MAKE) all
@@ -23,6 +23,9 @@ rmdir:
 find:
 	cd find && $(MAKE) all
 
+yacc:
+	cd yacc && $(MAKE) all
+
 clean:
 	cd pwd && $(MAKE) clean
 	cd ls && $(MAKE) clean
@@ -31,3 +34,4 @@ clean:
 	cd mkdir && $(MAKE) clean
 	cd rmdir && $(MAKE) clean
 	cd find && $(MAKE) clean
+	cd yacc && $(MAKE) clean

@@ -3,109 +3,11 @@
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Check if a command was provided
 if [ $# -lt 1 ]; then
     echo "Usage: h <command> [args...]"
     echo "Available commands: ls, pwd, head, tail, mkdir, rmdir, find"
-    echo "Each command supports various arguments. Use h help <command> for details."
     exit 1
 fi
 
-# Extract the command and remove it from arguments
-CMD="$1"
-shift
-
-# Show help for specific command
-if [ "$CMD" = "help" ]; then
-    if [ $# -lt 1 ]; then
-        echo "Available commands: ls, pwd, head, tail, mkdir, rmdir, find"
-        exit 0
-    fi
-    
-    case "$1" in
-        "ls")
-            echo "Usage: h ls [options] [directory]"
-            echo "Options:"
-            echo "  -a  List all entries including hidden files"
-            echo "  -l  Use a long listing format"
-            echo "  -r  Reverse order while sorting"
-            ;;
-        "pwd")
-            echo "Usage: h pwd [options]"
-            echo "Options:"
-            echo "  -L  Print the logical working directory"
-            echo "  -P  Print the physical directory without symbolic links"
-            echo "  --help  Display this help message"
-            ;;
-        "head")
-            echo "Usage: h head [options] [file]"
-            echo "Options:"
-            echo "  -n <num>  Print the first <num> lines (default: 10)"
-            echo "  -c <num>  Print the first <num> bytes"
-            echo "  -q  Never print headers giving file names"
-            ;;
-        "tail")
-            echo "Usage: h tail [options] [file]"
-            echo "Options:"
-            echo "  -n <num>  Print the last <num> lines (default: 10)"
-            echo "  -f  Follow the file as it grows"
-            echo "  -q  Never print headers giving file names"
-            ;;
-        "mkdir")
-            echo "Usage: h mkdir [options] directory..."
-            echo "Options:"
-            echo "  -p  Create parent directories as needed"
-            echo "  -v  Print a message for each created directory"
-            echo "  -m <mode>  Set permission mode (as in chmod)"
-            ;;
-        "rmdir")
-            echo "Usage: h rmdir [options] directory..."
-            echo "Options:"
-            echo "  -p  Remove parent directories as well"
-            echo "  -v  Verbose mode"
-            echo "  --ignore-fail-on-non-empty  Ignore failures for non-empty directories"
-            ;;
-        "find")
-            echo "Usage: h find [path] [options] [expression]"
-            echo "Options:"
-            echo "  -name <pattern>  Search for files with specific name"
-            echo "  -type <type>     Search for specific file type (f for file, d for directory)"
-            echo "  -size <size>     Search for files of specific size"
-            ;;
-        *)
-            echo "Unknown command: $1"
-            echo "Available commands: ls, pwd, head, tail, mkdir, rmdir, find"
-            ;;
-    esac
-    exit 0
-fi
-
-# Execute the appropriate command with remaining arguments
-case "$CMD" in
-    "ls")
-        "$SCRIPT_DIR/ls/ls" "$@"
-        ;;
-    "pwd")
-        "$SCRIPT_DIR/pwd/pwd" "$@"
-        ;;
-    "head")
-        "$SCRIPT_DIR/head/head" "$@"
-        ;;
-    "tail")
-        "$SCRIPT_DIR/tail/tail" "$@"
-        ;;
-    "mkdir")
-        "$SCRIPT_DIR/mkdir/mkdir" "$@"
-        ;;
-    "rmdir")
-        "$SCRIPT_DIR/rmdir/rmdir" "$@"
-        ;;
-    "find")
-        "$SCRIPT_DIR/find/find" "$@"
-        ;;
-    *)
-        echo "Unknown command: $CMD"
-        echo "Available commands: ls, pwd, head, tail, mkdir, rmdir, find"
-        exit 1
-        ;;
-esac
+# Use the parser to interpret and execute the command
+"$SCRIPT_DIR/yacc/command_parser" "$SCRIPT_DIR" "$@"
