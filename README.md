@@ -1,4 +1,4 @@
-## Utilitários de Linha de Comandos Linux com Analisador Lex/Yacc
+## Utilitários de Linha de Comandos Linux com Analisador léxico e sintático em Lex e Yacc
 
 ### Introdução
 
