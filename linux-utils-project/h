@@ -9,5 +9,84 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+# Check if the second argument is --help
+if [ $# -ge 2 ] && [ "$2" == "--help" ]; then
+    case "$1" in
+        ls)
+            echo "Usage: h ls [OPTION]... [FILE]..."
+            echo "List information about the FILEs (the current directory by default)."
+            echo ""
+            echo "Options:"
+            echo "  -a       mostrar ficheiros ocultos"
+            echo "  -l       usar formato de listagem detalhado"
+            echo "  -r       ordem inversa ao ordenar"
+            echo "  --help   exibir esta ajuda e sair"
+            ;;
+        pwd)
+            echo "Usage: h pwd [OPTION]..."
+            echo "Mostra o diretório de trabalho atual."
+            echo ""
+            echo "Options:"
+            echo "  -L       mostrar diretório de trabalho lógico (seguir ligações simbólicas)"
+            echo "  -P       mostrar diretório físico sem seguir ligações simbólicas"
+            echo "  --help   exibir esta ajuda e sair"
+            ;;
+        head)
+            echo "Usage: h head [OPTION]... [FILE]..."
+            echo "Exibir a primeira parte dos ficheiros."
+            echo ""
+            echo "Options:"
+            echo "  -n <num>   exibir as primeiras <num> linhas (padrão: 10)"
+            echo "  -c <num>   exibir os primeiros <num> bytes"
+            echo "  -q         nunca mostrar cabeçalhos com nomes de ficheiros"
+            echo "  --help     exibir esta ajuda e sair"
+            ;;
+        tail)
+            echo "Usage: h tail [OPTION]... [FILE]..."
+            echo "Exibir a última parte dos ficheiros."
+            echo ""
+            echo "Options:"
+            echo "  -n <num>   exibir as últimas <num> linhas (padrão: 10)"
+            echo "  -f         seguir o ficheiro à medida que cresce"
+            echo "  -q         nunca mostrar cabeçalhos com nomes de ficheiros"
+            echo "  --help     exibir esta ajuda e sair"
+            ;;
+        mkdir)
+            echo "Usage: h mkdir [OPTION]... DIRECTORY..."
+            echo "Criar diretórios."
+            echo ""
+            echo "Options:"
+            echo "  -p         criar diretórios parentais conforme necessário"
+            echo "  -v         exibir uma mensagem para cada diretório criado"
+            echo "  -m <modo>  definir modo de permissão"
+            echo "  --help     exibir esta ajuda e sair"
+            ;;
+        rmdir)
+            echo "Usage: h rmdir [OPTION]... DIRECTORY..."
+            echo "Remover diretórios vazios."
+            echo ""
+            echo "Options:"
+            echo "  -p                           remover também diretórios parentais"
+            echo "  -v                           modo detalhado"
+            echo "  --ignore-fail-on-non-empty   ignorar falhas para diretórios não vazios"
+            echo "  --help                       exibir esta ajuda e sair"
+            ;;
+        find)
+            echo "Usage: h find [PATH] [EXPRESSION]"
+            echo "Procurar ficheiros."
+            echo ""
+            echo "Options:"
+            echo "  -name <padrão>   procurar ficheiros com nome específico"
+            echo "  -type <tipo>     procurar tipo específico de ficheiro (f para ficheiro, d para diretório)"
+            echo "  -size <tamanho>  procurar ficheiros de tamanho específico"
+            echo "  --help           exibir esta ajuda e sair"
+            ;;
+        *)
+            echo "No help information available for command '$1'"
+            ;;
+    esac
+    exit 0
+fi
+
 # Use the parser to interpret and execute the command
 "$SCRIPT_DIR/yacc/command_parser" "$SCRIPT_DIR" "$@"
